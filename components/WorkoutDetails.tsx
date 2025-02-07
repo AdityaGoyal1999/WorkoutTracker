@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { HistoryPage } from "@/components/HistoryPage"
 
 const InfoRoute = () => (
   <ScrollView className="flex-1 bg-white p-4">
@@ -13,11 +14,11 @@ const InstructionsRoute = () => (
   </ScrollView>
 );
 
-const HistoryRoute = () => (
-    <ScrollView className="flex-1 bg-white p-4">
-        <Text>History</Text>
-    </ScrollView>
-)
+// const HistoryRoute = () => (
+//     <ScrollView className="flex-1 bg-white p-4">
+        
+//     </ScrollView>
+// )
 
 export default function WorkoutDetails({ exercise }: { exercise: string }) {
   const [activeTab, setActiveTab] = React.useState(0);
@@ -25,7 +26,7 @@ export default function WorkoutDetails({ exercise }: { exercise: string }) {
   const tabs = [
     { key: 'info', title: 'Info', component: InfoRoute },
     { key: 'instructions', title: 'Instructions', component: InstructionsRoute },
-    { key: 'history', title: 'History', component: HistoryRoute },
+    { key: 'history', title: 'History', component: () => <HistoryPage exercise={exercise} /> },
   ];
 
   return (

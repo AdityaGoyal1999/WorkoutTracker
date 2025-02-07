@@ -8,7 +8,7 @@ type BottomSheet = {
 
 type BottomSheetContextType = {
   bottomSheets: BottomSheet[];
-  addBottomSheet: (content: React.ReactNode) => void;
+  addBottomSheet: (content: React.ReactNode) => number;
   removeBottomSheet: (id: number) => void;
 };
 
@@ -17,7 +17,7 @@ const BottomSheetContext = createContext<BottomSheetContextType | undefined>(und
 export const BottomSheetProvider = ({ children }: { children: React.ReactNode }) => {
   const [bottomSheets, setBottomSheets] = useState<BottomSheet[]>([]);
 
-  const addBottomSheet = useCallback((content: React.ReactNode) => {
+  const addBottomSheet = useCallback((content: React.ReactNode): number => {
     const id = Date.now();
     console.log("Adding Bottom Sheet with id", id)
     setBottomSheets(prev => {

@@ -13,7 +13,12 @@ const CustomBottomSheet = ({ id, children }: CustomBottomSheetProps) => {
   const { removeBottomSheet } = useBottomSheet();
 
   const handleClose = () => {
-    removeBottomSheet(id);
+    // First animate the sheet down
+    bottomSheetRef.current?.close();
+    // Remove from context after animation (default animation is 500ms)
+    setTimeout(() => {
+      removeBottomSheet(id);
+    }, 500);
   };
 
   const renderBackdrop = useCallback(
