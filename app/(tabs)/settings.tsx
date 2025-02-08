@@ -2,6 +2,8 @@ import { View, SafeAreaView } from "react-native";
 import { useThemeContext } from "@/context/ThemeContext";
 import { Button, Text } from "@rneui/themed";
 import { Avatar } from "@rneui/base";
+import { logout } from "@/auth/authServices";
+
 export default function Settings() {
 
   const { mode, toggleTheme } = useThemeContext();
@@ -33,6 +35,13 @@ export default function Settings() {
           title="Toggle Theme"
           onPress={toggleTheme}
           buttonStyle={{ backgroundColor: '#0a7ea4' }}
+      />
+
+      <Button 
+        title="Logout"
+        style={{ marginTop: 20 }}
+        onPress={logout}
+        buttonStyle={{ backgroundColor: '#0a7ea4' }}
       />
     </SafeAreaView>
 
