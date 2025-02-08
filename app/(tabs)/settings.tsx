@@ -3,10 +3,12 @@ import { useThemeContext } from "@/context/ThemeContext";
 import { Button, Text } from "@rneui/themed";
 import { Avatar } from "@rneui/base";
 import { logout } from "@/auth/authServices";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Settings() {
 
   const { mode, toggleTheme } = useThemeContext();
+  const { user } = useAuth();
 
   return (
     <SafeAreaView className="mx-4">
@@ -19,7 +21,7 @@ export default function Settings() {
           source={{ uri: 'https://github.com/brunogallotte.png' }}
         />
       </View>
-
+      <Text className="text-lg font-bold">{user?.email}</Text>
       <View className="flex-row my-4 gap-4 h-24">
         <View style={{ backgroundColor: '#0a7ea4', padding: 10, borderRadius: 10 }} className="flex-1 justify-center items-center">
           <Text>100</Text>
