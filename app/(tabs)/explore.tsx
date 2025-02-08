@@ -1,19 +1,30 @@
 import { View, SafeAreaView, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SearchBar } from '@rneui/themed';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { dummyWorkouts } from '@/data/dummyData';
 import { useBottomSheet } from '@/context/BottomSheetContext';
 import WorkoutDetails from '@/components/WorkoutDetails';
+import { getExercises, searchExercises } from '@/data/exerciseDB';
+import { Button } from '@rneui/base';
 
 
 export default function TabTwoScreen() {
   const [search, setSearch] = useState('');
   const { addBottomSheet } = useBottomSheet();
+  const [exercises, setExercises] = useState([]);
 
   const updateSearch = (text: string) => {
     setSearch(text);
   };
+
+  useEffect(() => {
+    const fetchExercises = async () => {
+      const exercises = await getExercises();
+      setExercises(exercises);
+    };
+    fetchExercises();
+  }, []);
 
   return (
     <SafeAreaView className="flex-1 bg-white px-4">
@@ -41,24 +52,30 @@ export default function TabTwoScreen() {
           searchIcon={<Ionicons name="search" size={24} color="#666" />}
           clearIcon={<Ionicons name="close" size={24} color="#666" />}
         />
+        <Button
+          title="Search"
+          onPress={() => {
+            searchExercises(search)
+            .then((exercises) => {
+              setExercises(exercises);
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+          }}
+        />
 
-        <Text className="text-2xl font-bold">{search}</Text>
+        {/* <Text className="text-2xl font-bold">{search}</Text> */}
         <ScrollView>
+
           {
-            Object.keys(dummyWorkouts).map((workout, index) => (
-              <View key={index}>
-                {
-                  dummyWorkouts[workout].map((exercise, index) => (
-                    <TouchableOpacity 
-                      key={index} 
-                      className="bg-red-200 p-2 rounded-lg my-2"
-                      onPress={() => addBottomSheet(<WorkoutDetails exercise={exercise}/>)}
-                    >
-                      <Text className="text-lg">{exercise}</Text>
-                    </TouchableOpacity>
-                  ))
-                }
-              </View>
+            exercises.map((exercise, index) => (
+              <TouchableOpacity key={index}>
+                <Text 
+                  className="bg-red-200 p-2 rounded-lg my-2"
+                  onPress={() => addBottomSheet(<WorkoutDetails exercise={exercise}/>)}
+                >{exercise.name}</Text>
+              </TouchableOpacity>
             ))
           }
         </ScrollView>
