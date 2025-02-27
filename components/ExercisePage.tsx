@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { View, ScrollView, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, ScrollView, TouchableOpacity, Image, TextInput } from 'react-native';
 import { Text, Button } from '@rneui/themed';
 import { Ionicons } from '@expo/vector-icons';
 import { useBottomSheet } from '@/context/BottomSheetContext';
+import { dummyWorkouts } from '@/data/dummyData';
 
 interface Set {
   number: number;
@@ -13,25 +14,32 @@ interface Set {
 }
 
 interface ExercisePageProps {
-  exercise: string;
+  exercises: any[];
   workoutName: string;
 }
 
-export const ExercisePage = ({ exercise, workoutName }: ExercisePageProps) => {
+// If we've come to this point, workoutName exists in dummyWorkouts
+
+
+export const ExercisePage = ({ exercises, workoutName }: ExercisePageProps) => {
   const { addBottomSheet, removeBottomSheet } = useBottomSheet();
+  const [activeExercise, setActiveExercise] = useState(exercises[0])
+
   const [sets, setSets] = useState<Set[]>([
     { number: 1, weight: 90, reps: 12, oneRM: 94.5, completed: false },
     { number: 2, weight: 90, reps: 12, oneRM: 94.5, completed: false },
     { number: 3, weight: 90, reps: 12, oneRM: 94.5, completed: false },
   ]);
 
-  const images = [
-    'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=300&h=300&fit=crop',
-    'https://images.unsplash.com/photo-1574680096145-d05b474e2155?q=80&w=300&h=300&fit=crop',
-    'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?q=80&w=300&h=300&fit=crop',
-    'https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?q=80&w=300&h=300&fit=crop',
-    'https://images.unsplash.com/photo-1605296867424-35fc25c9212a?q=80&w=300&h=300&fit=crop',
-  ];
+  // useEffect(() => console.log(exercises), [])
+
+  // const images = [
+  //   'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=300&h=300&fit=crop',
+  //   'https://images.unsplash.com/photo-1574680096145-d05b474e2155?q=80&w=300&h=300&fit=crop',
+  //   'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?q=80&w=300&h=300&fit=crop',
+  //   'https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?q=80&w=300&h=300&fit=crop',
+  //   'https://images.unsplash.com/photo-1605296867424-35fc25c9212a?q=80&w=300&h=300&fit=crop',
+  // ];
 
   const toggleSetCompletion = (index: number) => {
     const newSets = [...sets];
@@ -66,12 +74,15 @@ export const ExercisePage = ({ exercise, workoutName }: ExercisePageProps) => {
           showsHorizontalScrollIndicator={false}
           className="flex-row gap-2 my-4"
         >
-          {images.map((img, index) => (
-            <TouchableOpacity key={index} className="mx-4">
-              <Image 
-                source={{ uri: img }}
-                className="w-16 h-16 rounded-2xl"
-              />
+          {exercises.map((exercise, index) => (
+            <TouchableOpacity 
+              key={index} 
+              className="mx-4"
+              onPress={() => setActiveExercise(exercise)} 
+            >
+              <View className="w-16 h-16 rounded-2xl bg-gray-200 justify-center items-center">
+                <Text>{exercise.name || `Exercise ${index + 1}`}</Text>
+              </View>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -79,7 +90,7 @@ export const ExercisePage = ({ exercise, workoutName }: ExercisePageProps) => {
         <View className="p-4">
           {/* Exercise Title */}
           <View className="flex-row justify-between items-center">
-            <Text className="text-2xl font-bold">{exercise}</Text>
+            <Text className="text-2xl font-bold">{activeExercise}</Text>
             <TouchableOpacity>
               <Ionicons name="ellipsis-horizontal" size={24} color="black" onPress={exerciseOptions}/>
             </TouchableOpacity>
@@ -106,7 +117,6 @@ export const ExercisePage = ({ exercise, workoutName }: ExercisePageProps) => {
               <Text className="font-semibold">#</Text>
               <Text className="font-semibold">LB</Text>
               <Text className="font-semibold">REPS</Text>
-              <Text className="font-semibold">10RM</Text>
               <View style={{ width: 24 }} /> {/* Spacer for checkmark */}
             </View>
 
@@ -118,9 +128,28 @@ export const ExercisePage = ({ exercise, workoutName }: ExercisePageProps) => {
                 className="flex-row justify-between items-center mb-4"
               >
                 <Text className={set.completed ? "text-gray-400" : ""}>{set.number}</Text>
-                <Text className={set.completed ? "text-gray-400" : ""}>{set.weight}</Text>
-                <Text className={set.completed ? "text-gray-400" : ""}>{set.reps}</Text>
-                <Text className={set.completed ? "text-gray-400" : ""}>{set.oneRM}</Text>
+                <TextInput
+                  style={{ width: 40, textAlign: 'center' }}
+                  value={String(set.weight)}
+                  onChangeText={(text) => {
+                    const newSets = [...sets];
+                    newSets[index].weight = parseFloat(text) || 0;
+                    setSets(newSets);
+                  }}
+                  keyboardType="numeric"
+                  className="bg-gray-100 rounded-lg"
+                />
+                <TextInput
+                  style={{ width: 40, textAlign: 'center'}}
+                  value={String(set.reps)}
+                  onChangeText={(text) => {
+                    const newSets = [...sets];
+                    newSets[index].reps = parseInt(text) || 0;
+                    setSets(newSets);
+                  }}
+                  keyboardType="numeric"
+                  className="bg-gray-100 rounded-lg"
+                />
                 <View className="w-6 h-6 justify-center items-center">
                   {set.completed ? (
                     <Ionicons name="checkmark-circle" size={24} color="#4ade80" />
