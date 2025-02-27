@@ -18,12 +18,19 @@ interface ExercisePageProps {
   workoutName: string;
 }
 
+interface ExerciseProgress {
+  exerciseName: string;
+  workoutName: string;
+  userId: string;
+  sets: Set[];
+}
+
 // If we've come to this point, workoutName exists in dummyWorkouts
 
 
 export const ExercisePage = ({ exercises, workoutName }: ExercisePageProps) => {
   const { addBottomSheet, removeBottomSheet } = useBottomSheet();
-  const [activeExercise, setActiveExercise] = useState(exercises[0])
+  const [activeExercise, setActiveExercise] = useState(0)
 
   const [sets, setSets] = useState<Set[]>([
     { number: 1, weight: 90, reps: 12, oneRM: 94.5, completed: false },
@@ -31,20 +38,35 @@ export const ExercisePage = ({ exercises, workoutName }: ExercisePageProps) => {
     { number: 3, weight: 90, reps: 12, oneRM: 94.5, completed: false },
   ]);
 
-  // useEffect(() => console.log(exercises), [])
 
-  // const images = [
-  //   'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=300&h=300&fit=crop',
-  //   'https://images.unsplash.com/photo-1574680096145-d05b474e2155?q=80&w=300&h=300&fit=crop',
-  //   'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?q=80&w=300&h=300&fit=crop',
-  //   'https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?q=80&w=300&h=300&fit=crop',
-  //   'https://images.unsplash.com/photo-1605296867424-35fc25c9212a?q=80&w=300&h=300&fit=crop',
-  // ];
+  const [exerciseProgress, setExerciseProgress] = useState<ExerciseProgress[]>([]);
 
-  const toggleSetCompletion = (index: number) => {
-    const newSets = [...sets];
-    newSets[index].completed = !newSets[index].completed;
-    setSets(newSets);
+  useEffect(() => {
+    console.log(exercises)
+    const initialProgress = exercises.map((exercise) => ({
+      exerciseName: exercise,
+      workoutName: workoutName,
+      userId: "testId1", // Replace with actual user ID if available
+      sets: [
+        { number: 1, weight: 90, reps: 12, oneRM: 94.5, completed: false },
+        { number: 2, weight: 90, reps: 12, oneRM: 94.5, completed: false },
+        { number: 3, weight: 90, reps: 12, oneRM: 94.5, completed: false },
+      ],
+    }));
+    setExerciseProgress(initialProgress);
+  }, [exercises, workoutName]);
+
+  const updateSet = (exerciseIndex: number, setIndex: number, field: 'weight' | 'reps', value: number) => {
+    const updatedProgress = [...exerciseProgress];
+    updatedProgress[exerciseIndex].sets[setIndex][field] = value;
+    setExerciseProgress(updatedProgress);
+  };
+
+  const toggleSetCompletion = (exerciseIndex: number, setIndex: number) => {
+    const updatedProgress = [...exerciseProgress];
+    const set = updatedProgress[exerciseIndex].sets[setIndex];
+    set.completed = !set.completed;
+    setExerciseProgress(updatedProgress);
   };
 
   const exerciseOptions = () => {
@@ -74,14 +96,14 @@ export const ExercisePage = ({ exercises, workoutName }: ExercisePageProps) => {
           showsHorizontalScrollIndicator={false}
           className="flex-row gap-2 my-4"
         >
-          {exercises.map((exercise, index) => (
+          {exerciseProgress.map((exercise, exerciseIndex) => (
             <TouchableOpacity 
-              key={index} 
+              key={exerciseIndex} 
               className="mx-4"
-              onPress={() => setActiveExercise(exercise)} 
+              onPress={() => setActiveExercise(exerciseIndex)} 
             >
               <View className="w-16 h-16 rounded-2xl bg-gray-200 justify-center items-center">
-                <Text>{exercise.name || `Exercise ${index + 1}`}</Text>
+                <Text>{exercise.exerciseName}</Text>
               </View>
             </TouchableOpacity>
           ))}
@@ -90,7 +112,7 @@ export const ExercisePage = ({ exercises, workoutName }: ExercisePageProps) => {
         <View className="p-4">
           {/* Exercise Title */}
           <View className="flex-row justify-between items-center">
-            <Text className="text-2xl font-bold">{activeExercise}</Text>
+            <Text className="text-2xl font-bold">{exercises[activeExercise]}</Text>
             <TouchableOpacity>
               <Ionicons name="ellipsis-horizontal" size={24} color="black" onPress={exerciseOptions}/>
             </TouchableOpacity>
@@ -121,44 +143,35 @@ export const ExercisePage = ({ exercises, workoutName }: ExercisePageProps) => {
             </View>
 
             {/* Sets */}
-            {sets.map((set, index) => (
-              <TouchableOpacity 
-                key={index}
-                onPress={() => toggleSetCompletion(index)}
-                className="flex-row justify-between items-center mb-4"
-              >
-                <Text className={set.completed ? "text-gray-400" : ""}>{set.number}</Text>
-                <TextInput
-                  style={{ width: 40, textAlign: 'center' }}
-                  value={String(set.weight)}
-                  onChangeText={(text) => {
-                    const newSets = [...sets];
-                    newSets[index].weight = parseFloat(text) || 0;
-                    setSets(newSets);
-                  }}
-                  keyboardType="numeric"
-                  className="bg-gray-100 rounded-lg"
-                />
-                <TextInput
-                  style={{ width: 40, textAlign: 'center'}}
-                  value={String(set.reps)}
-                  onChangeText={(text) => {
-                    const newSets = [...sets];
-                    newSets[index].reps = parseInt(text) || 0;
-                    setSets(newSets);
-                  }}
-                  keyboardType="numeric"
-                  className="bg-gray-100 rounded-lg"
-                />
-                <View className="w-6 h-6 justify-center items-center">
-                  {set.completed ? (
-                    <Ionicons name="checkmark-circle" size={24} color="#4ade80" />
-                  ) : (
-                    <View className="w-6 h-6 border-2 border-gray-300 rounded-full" />
-                  )}
-                </View>
-              </TouchableOpacity>
-            ))}
+            {exerciseProgress[activeExercise]?.sets.map((set, setIndex) => (
+                <TouchableOpacity 
+                  key={setIndex}
+                  onPress={() => toggleSetCompletion(setIndex)}
+                  className="flex-row justify-between items-center mb-4"
+                >
+                  <Text className={set.completed ? "text-gray-400" : ""}>{set.number}</Text>
+                  <TextInput
+                    style={{ width: 40, textAlign: 'center', backgroundColor: '#ffcccc' }}
+                    value={String(set.weight)}
+                    onChangeText={(text) => updateSet(activeExercise, setIndex, 'weight', parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                  />
+                  <TextInput
+                    style={{ width: 40, textAlign: 'center', backgroundColor: '#ffcccc' }}
+                    value={String(set.reps)}
+                    onChangeText={(text) => updateSet(activeExercise, setIndex, 'reps', parseInt(text) || 0)}
+                    keyboardType="numeric"
+                  />
+                  <View className="w-6 h-6 justify-center items-center">
+                    {set.completed ? (
+                      <Ionicons name="checkmark-circle" size={24} color="#4ade80" />
+                    ) : (
+                      <View className="w-6 h-6 border-2 border-gray-300 rounded-full" />
+                    )}
+                  </View>
+                </TouchableOpacity>
+              ))}
+
           </View>
 
           {/* History Section */}
@@ -172,7 +185,7 @@ export const ExercisePage = ({ exercises, workoutName }: ExercisePageProps) => {
                 <Text className="text-gray-500">{set.number}</Text>
                 <Text className="text-gray-500">{set.weight}</Text>
                 <Text className="text-gray-500">{set.reps}</Text>
-                <Text className="text-gray-500">{set.oneRM}</Text>
+                {/* <Text className="text-gray-500">{set.oneRM}</Text> */}
               </View>
             ))}
           </View>
