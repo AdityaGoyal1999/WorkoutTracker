@@ -20,11 +20,24 @@ export default function TabTwoScreen() {
 
   useEffect(() => {
     const fetchExercises = async () => {
-      const exercises = await getExercises();
-      setExercises(exercises);
+      const response = await fetch('https://getexercises-sc2vtzlvkq-uc.a.run.app');
+      const data = await response.json()
+      setExercises(data);
     };
-    fetchExercises();
-  }, []);
+    if (search === '') fetchExercises();
+  }, [search]);
+
+  const handleSearch = async () => {
+    try {
+      const encodedSearch = encodeURIComponent(search);  // handle multiple words in search bar
+      const response = await fetch(`https://searchexercises-sc2vtzlvkq-uc.a.run.app?name=${encodedSearch}`);
+      const data = await response.json();
+      setExercises(data)
+    }
+    catch (error) {
+      console.error("Error searching exercises:", error);
+    }
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-white px-4">
@@ -54,15 +67,7 @@ export default function TabTwoScreen() {
         />
         <Button
           title="Search"
-          onPress={() => {
-            searchExercises(search)
-            .then((exercises) => {
-              setExercises(exercises);
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-          }}
+          onPress={handleSearch}
         />
 
         {/* <Text className="text-2xl font-bold">{search}</Text> */}

@@ -18,8 +18,13 @@ import { getFirestore } from "firebase-admin/firestore";
 
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import axios from "axios";
+import { defineString } from "firebase-functions/params";
 
 initializeApp();
+
+const EXERCISE_DB_URL = 'https://exercisedb.p.rapidapi.com';
+const exerciseDbKey = defineString('EXERCISEDB_KEY');
 
 export const addMessage = onRequest(async (req, res) => {
     const original = req.query.text;
@@ -45,6 +50,49 @@ export const makeUppercase = onDocumentCreated("/messages/{documentId}", (event)
 export const helloWorld = functions.https.onRequest((request, response) => {
   response.send("Hello from Firebase!");
 });
+
+
+export const getExercises = onRequest(async (req, res) => {
+    try {
+        const apiKey = exerciseDbKey.value();
+        const response = await axios.get(`${EXERCISE_DB_URL}/exercises`, {
+            headers: {
+              'X-RapidAPI-Key': apiKey,
+            }
+          });
+        
+          res.json(response.data);
+    }
+    catch (error) {
+        logger.error("Error fetching exercises:", error);
+        res.status(500).send("Error fetching exercises");
+    }
+})
+
+export const searchExercises = onRequest(async (req, res) => {
+    try {
+        const apiKey = exerciseDbKey.value();
+        const query = req.query.name;
+
+        if (!query) {
+            res.status(400).send("Query parameter 'name' can't be left empty.");
+            return;
+        }
+
+        const response = await axios.get(`${EXERCISE_DB_URL}/exercises/name/${query.toLowerCase()}`, {
+            headers: {
+                'X-RapidAPI-Key': apiKey,
+            }
+        })
+
+        // const data = await response.json();
+        res.json(response.data);
+    }
+    catch (error) {
+        logger.error("Error searching exercises:", error);
+        res.status(500).send("Error searching exercises");
+    }
+})
 
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
