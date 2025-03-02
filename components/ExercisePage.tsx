@@ -42,7 +42,7 @@ export const ExercisePage = ({ exercises, workoutName }: ExercisePageProps) => {
   const [exerciseProgress, setExerciseProgress] = useState<ExerciseProgress[]>([]);
 
   useEffect(() => {
-    console.log(exercises)
+    // console.log(exercises)
     const initialProgress = exercises.map((exercise) => ({
       exerciseName: exercise,
       workoutName: workoutName,
@@ -62,9 +62,9 @@ export const ExercisePage = ({ exercises, workoutName }: ExercisePageProps) => {
     setExerciseProgress(updatedProgress);
   };
 
-  const toggleSetCompletion = (exerciseIndex: number, setIndex: number) => {
+  const toggleSetCompletion = (setIndex: number) => {
     const updatedProgress = [...exerciseProgress];
-    const set = updatedProgress[exerciseIndex].sets[setIndex];
+    const set = updatedProgress[activeExercise].sets[setIndex];
     set.completed = !set.completed;
     setExerciseProgress(updatedProgress);
   };
@@ -74,12 +74,33 @@ export const ExercisePage = ({ exercises, workoutName }: ExercisePageProps) => {
     const content = (
       <View className="flex-1">
         <Text h3>Complete Exercise</Text>
-        <Button title="Yes" onPress={() => console.log("Yes")} />
+        <Button title="Yes" onPress={() => sendProgressToBackend()} />
         <Button title="No" onPress={() => bottomSheetId && removeBottomSheet(bottomSheetId)} />
       </View>
     );
     bottomSheetId = addBottomSheet(content);
   }
+
+  const sendProgressToBackend = async () => {
+    try {
+      const response = await fetch('https://addexercisehistory-sc2vtzlvkq-uc.a.run.app', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(exerciseProgress),
+      });
+
+      // if (!response.ok) {
+      //   throw new Error('Network response was not ok');
+      // }
+
+      const data = await response.json();
+      console.log('Success:', data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   return (
     <ScrollView className="flex-1 bg-white">

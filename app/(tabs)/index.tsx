@@ -57,7 +57,7 @@ export default function HomeScreen() {
         <WeekStrip />
         <View>
           <Text>Push Pull Workouts</Text>
-          <View className="gap-4 my-4 bg-red-200 p-4 rounded-lg">
+          <View className="gap-4 my-4 m-2 p-4 rounded-lg border-2 border-gray-500">
             {
               workouts.map((workout, index) => (
                 <TouchableOpacity 
@@ -71,7 +71,7 @@ export default function HomeScreen() {
                     }
                   }}
                 >
-                  <View key={index} className="bg-red-400 p-2 rounded-lg flex-row items-center">
+                  <View key={index} className="p-2 rounded-lg flex-row items-center">
                     {
                       workout.complete ?
                       <Ionicons name="checkmark-circle-outline" size={24} color="black" />

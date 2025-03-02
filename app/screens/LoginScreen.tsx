@@ -24,7 +24,7 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{isSignUp ? "Sign Up" : "Login"}</Text>
+      <Text style={styles.title}>{isSignUp ? "Start Your Workout Journey" : "Your Workouts"}</Text>
 
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
