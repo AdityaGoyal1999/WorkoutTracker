@@ -11,7 +11,7 @@ export default function Settings() {
   const { user } = useAuth();
 
   return (
-    <SafeAreaView className="mx-4">
+    <SafeAreaView className="mx-4 flex-1">
       <Text h1>Settings</Text>
       
       <View className="flex-row justify-center items-center my-4">
@@ -39,12 +39,20 @@ export default function Settings() {
           buttonStyle={{ backgroundColor: '#0a7ea4' }}
       />
 
+      <Button
+          title="Edit Profile"
+          onPress={console.log("Profile Page is being editted")}
+          style={{ marginTop: 20 }}
+          buttonStyle={{ backgroundColor: '#0a7ea4' }}
+      />
+
       <Button 
         title="Logout"
         style={{ marginTop: 20 }}
         onPress={logout}
         buttonStyle={{ backgroundColor: '#0a7ea4' }}
       />
+      <Text>Version 1.0.0</Text>
     </SafeAreaView>
 
   );
