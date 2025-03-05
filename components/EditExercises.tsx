@@ -1,14 +1,38 @@
 import { Text, TouchableOpacity, Touchable, View } from "react-native"
-import { workouts } from "@/data/dummyData"
+// import { workouts } from "@/data/dummyData"
 import { Input, Button } from "@rneui/themed"
 import { Ionicons } from "@expo/vector-icons"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
-const userId = "testId1"
+const userId = "testId1";
+const planId = "uk7BRZjNKPOYmVGtBfDw";
 
 export const EditExercses = () => {
-    const [planName, editPlanName] = useState("") // exercise plan new name
+    const [planName, setPlanName] = useState("") // exercise plan new name
+    const [workouts, setWorkouts] = useState([]);
 
+    useEffect(() => {
+        const fetchExercises = async () => {
+            try {
+              const response = await fetch('https://getexerciseplan-sc2vtzlvkq-uc.a.run.app?userId=' + userId + '&planId=' + planId);
+      
+              // TODO: add later
+              // if (!response.ok) {
+              //   throw new Error('Network response was not ok');
+              // }
+      
+              const data = await response.json();
+            //   console.log(data)
+              setWorkouts(data.exercises)
+              setPlanName(data.name)
+              // console.log(data); // You can replace this with any state update or processing logic
+            } catch (error) {
+              console.error('Error fetching exercises:', error);
+            }
+          };
+        
+          fetchExercises();
+    }, [])
 
     const handleSave = async () => {
         // try {
@@ -42,7 +66,7 @@ export const EditExercses = () => {
             <Text className="text-2xl">Edit Your Exercises</Text>
             <Text>Change the name of your workouts</Text>
             <Input placeholder="Push Pull Workouts" onChangeText={(newText) => {
-                editPlanName(newText); // TODO: check if there's an efficient way of doing this
+                setPlanName(newText); // TODO: check if there's an efficient way of doing this
             }} />
             <Button 
                 title="Save" 

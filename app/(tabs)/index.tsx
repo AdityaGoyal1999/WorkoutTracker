@@ -15,11 +15,16 @@ import { StartWorkoutPage } from '@/components/StartWorkoutPage';
 // import { workouts } from '@/data/dummyData';
 import { EditExercses } from '@/components/EditExercises';
 
+
+// TODO: To be made dynamic later down the line
+const userId = "testId1";
+const planId = "uk7BRZjNKPOYmVGtBfDw"
+
 export default function HomeScreen() {
   const { theme } = useTheme();
   const { mode, toggleTheme } = useThemeContext();
   const { addBottomSheet } = useBottomSheet();
-  const [workouts, setWorkouts] = useState({})
+  const [workouts, setWorkouts] = useState([])
   const [planName, setPlanName] = useState("Exercise Plan")
 
   const DummyContent = () => (
@@ -31,7 +36,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const fetchExercises = async () => {
       try {
-        const response = await fetch('https://getexercises-sc2vtzlvkq-uc.a.run.app');
+        const response = await fetch('https://getexerciseplan-sc2vtzlvkq-uc.a.run.app?userId=' + userId + '&planId=' + planId);
 
         // TODO: add later
         // if (!response.ok) {
@@ -39,6 +44,7 @@ export default function HomeScreen() {
         // }
 
         const data = await response.json();
+        console.log(data)
         setWorkouts(data.exercises)
         setPlanName(data.name)
         // console.log(data); // You can replace this with any state update or processing logic
@@ -84,14 +90,14 @@ export default function HomeScreen() {
         <WeekStrip />
         <View className="bg-yellow-100 mx-2">
           <View className="flex-row items-center justify-between">
-            <Text className="font-semibold text-2xl">Push Pull Workouts</Text>
+            <Text className="font-semibold text-2xl">{ planName }</Text>
             <TouchableOpacity className="border-4 border-orange-400 p-2 rounded-xl" onPress={() => addBottomSheet( <EditExercses />)}>
               <Ionicons name="pencil-outline" size={24} color="black" />
             </TouchableOpacity>
           </View>
           <View className="gap-4 my-4 m-2 p-4 rounded-lg border-2 border-gray-500">
             {
-              workouts.map((workout, index) => (
+              workouts?.map((workout, index) => (
                 <TouchableOpacity 
                   key={index} 
                   onPress={() => {

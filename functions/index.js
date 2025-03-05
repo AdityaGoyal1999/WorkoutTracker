@@ -319,7 +319,7 @@ export const fetchExerciseHistory = onRequest(async (req, res) => {
 export const createExercisePlan = onRequest(async (req, res) => {
   try {
     const { userId, exercisePlan } = req.body;
-    console.log(userId, exercisePlan)
+    // console.log(userId, exercisePlan)
     // if (!userId || !exercisePlan) {
     //   res.status(400).json({
     //       error: "Missing required body parameters",
