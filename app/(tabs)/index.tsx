@@ -13,6 +13,7 @@ import WeekStrip from '@/components/WeekStrip';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StartWorkoutPage } from '@/components/StartWorkoutPage';
 import { workouts } from '@/data/dummyData';
+import { EditExercses } from '@/components/EditExercises';
 
 export default function HomeScreen() {
   const { theme } = useTheme();
@@ -55,8 +56,13 @@ export default function HomeScreen() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={{ backgroundColor: theme.colors.background, flex: 1 }}>
         <WeekStrip />
-        <View>
-          <Text>Push Pull Workouts</Text>
+        <View className="bg-yellow-100 mx-2">
+          <View className="flex-row items-center justify-between">
+            <Text className="font-semibold text-2xl">Push Pull Workouts</Text>
+            <TouchableOpacity className="border-4 border-orange-400 p-2 rounded-xl" onPress={() => addBottomSheet( <EditExercses />)}>
+              <Ionicons name="pencil-outline" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
           <View className="gap-4 my-4 m-2 p-4 rounded-lg border-2 border-gray-500">
             {
               workouts.map((workout, index) => (
