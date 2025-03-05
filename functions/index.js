@@ -315,3 +315,61 @@ export const fetchExerciseHistory = onRequest(async (req, res) => {
     });
   }
 });
+
+export const createExercisePlan = onRequest(async (req, res) => {
+  try {
+    const { userId, exercisePlan } = req.body;
+    console.log(userId, exercisePlan)
+    // if (!userId || !exercisePlan) {
+    //   res.status(400).json({
+    //       error: "Missing required body parameters",
+    //       details: {
+    //           userId: !userId,
+    //           exercisePlan: !exercisePlan
+    //       }
+    //   });
+    //   return;
+    // }
+
+    const userRef = db.collection('users').doc(userId);
+    const planRef = await userRef.collection('exercisePlans').add(exercisePlan);
+
+    res.status(201).json({
+      message: "Exercise plan created successfully",
+      planId: planRef.id
+    })
+  }
+  catch (error) {
+    logger.error("Error creating exercise plan:", error);
+    res.status(500).json({
+      error: "Error creating exercise plan",
+      details: error.message
+    })
+  }
+})
+
+
+export const getExercisePlan = onRequest(async (req, res) => {
+  try {
+    const { userId, planId } = req.query;
+
+    // TODO: check if userId, planId are available
+
+    const planRef = db
+      .collection('users')
+      .doc(userId)
+      .collection('exercisePlans')
+      .doc(planId)
+
+    const planDoc = await planRef.get();
+
+    res.status(200).json(planDoc.data());
+  }
+  catch (error) {
+    logger.error("Error fetching exercise plan:", error);
+    res.status(500).json({
+      error: "Error fetching exercise plan",
+      details: error.message
+    })
+  }
+})

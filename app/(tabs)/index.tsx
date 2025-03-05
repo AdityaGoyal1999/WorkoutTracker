@@ -1,5 +1,5 @@
 import { View, SafeAreaView, TouchableOpacity } from 'react-native';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Text, Button, useTheme } from '@rneui/themed';
 import { useThemeContext } from '@/context/ThemeContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -12,13 +12,15 @@ import WorkoutDetails from '@/components/WorkoutDetails';
 import WeekStrip from '@/components/WeekStrip';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StartWorkoutPage } from '@/components/StartWorkoutPage';
-import { workouts } from '@/data/dummyData';
+// import { workouts } from '@/data/dummyData';
 import { EditExercses } from '@/components/EditExercises';
 
 export default function HomeScreen() {
   const { theme } = useTheme();
   const { mode, toggleTheme } = useThemeContext();
   const { addBottomSheet } = useBottomSheet();
+  const [workouts, setWorkouts] = useState({})
+  const [planName, setPlanName] = useState("Exercise Plan")
 
   const DummyContent = () => (
     <View>
@@ -26,11 +28,35 @@ export default function HomeScreen() {
     </View>
   );
 
+  useEffect(() => {
+    const fetchExercises = async () => {
+      try {
+        const response = await fetch('https://getexercises-sc2vtzlvkq-uc.a.run.app');
+
+        // TODO: add later
+        // if (!response.ok) {
+        //   throw new Error('Network response was not ok');
+        // }
+
+        const data = await response.json();
+        setWorkouts(data.exercises)
+        setPlanName(data.name)
+        // console.log(data); // You can replace this with any state update or processing logic
+      } catch (error) {
+        console.error('Error fetching exercises:', error);
+      }
+    };
+  
+    fetchExercises();
+  }, []);
+
   const DummyWorkout = ({ workout }: { workout: string }) => {
     let workoutList: string[] = [];
     if (workout in dummyWorkouts){
       workoutList = dummyWorkouts[workout];
     }
+  
+
 
     return (
       <View>

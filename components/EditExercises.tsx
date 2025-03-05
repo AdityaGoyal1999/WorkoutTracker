@@ -4,8 +4,38 @@ import { Input, Button } from "@rneui/themed"
 import { Ionicons } from "@expo/vector-icons"
 import { useState } from "react"
 
+const userId = "testId1"
+
 export const EditExercses = () => {
     const [planName, editPlanName] = useState("") // exercise plan new name
+
+
+    const handleSave = async () => {
+        // try {
+        //     console.log(userId)
+        //     const response = await fetch('http://127.0.0.1:5001/workouttracker-4a458/us-central1/createExercisePlan', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify({
+        //             userId: userId, // Replace with actual user ID
+        //             exercisePlan: {
+        //                 name: planName || "Push Pull Workout",
+        //                 exercises: workouts
+        //             }
+        //         }),
+        //     });
+
+        //     console.log("Trying to data to database")
+
+        //     const data = await response.json();
+        //     console.log('Exercise plan created successfully:', data);
+        // } catch (error) {
+        //     console.error('Error creating exercise plan:', error);
+        // }
+        console.log("Handle the save functionality")
+    }
 
     return (
         <View className="flex-1 mx-2 gap-4">
@@ -23,7 +53,10 @@ export const EditExercses = () => {
                   containerStyle={{
                     marginHorizontal: 50,
                   }}
-                onPress={() => console.log("Trying to save plan's new name")}
+
+                // TODO: remove this. It's a one time thing
+                // onPress={() => console.log("Trying to save plan's new name")}
+                onPress={handleSave} 
             />
             {
                 workouts.map((workout, index) => (
