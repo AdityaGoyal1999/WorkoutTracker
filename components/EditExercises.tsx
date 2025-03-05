@@ -3,6 +3,9 @@ import { Text, TouchableOpacity, Touchable, View } from "react-native"
 import { Input, Button } from "@rneui/themed"
 import { Ionicons } from "@expo/vector-icons"
 import { useState, useEffect } from "react"
+import { useBottomSheet } from '@/context/BottomSheetContext';
+import { EditExerciseGroup } from "./EditExerciseGroup";
+
 
 const userId = "testId1";
 const planId = "uk7BRZjNKPOYmVGtBfDw";
@@ -10,6 +13,7 @@ const planId = "uk7BRZjNKPOYmVGtBfDw";
 export const EditExercses = () => {
     const [planName, setPlanName] = useState("") // exercise plan new name
     const [workouts, setWorkouts] = useState([]);
+    const { addBottomSheet } = useBottomSheet();
 
     useEffect(() => {
         const fetchExercises = async () => {
@@ -81,6 +85,20 @@ export const EditExercses = () => {
                 // TODO: remove this. It's a one time thing
                 // onPress={() => console.log("Trying to save plan's new name")}
                 onPress={handleSave} 
+            />
+            <Button
+                title="Add Exercise Group"
+                buttonStyle={{
+                    backgroundColor: 'rgba(78, 116, 289, 1)',
+                    borderRadius: 3,
+                  }}
+                  containerStyle={{
+                    marginHorizontal: 50,
+                  }}
+
+                // TODO: remove this. It's a one time thing
+                // onPress={() => console.log("Trying to save plan's new name")}
+                onPress={() => addBottomSheet(<EditExerciseGroup />)} 
             />
             {
                 workouts.map((workout, index) => (
